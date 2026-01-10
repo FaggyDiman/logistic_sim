@@ -46,6 +46,12 @@ class Town:
             self.road_count -= 1
             other_town.roads.remove(self)
             other_town.road_count -= 1
+    
+    def findRoute(self, towns: list):
+        pass
+
+    def calculateSaldo(self, towns: list):
+        pass
 
 def initializeTowns(num_towns: int, start_population: int, start_warehouse: list, pop_cf: float, width: int, height: int) -> list:
     towns = []
