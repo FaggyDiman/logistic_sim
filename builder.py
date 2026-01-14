@@ -4,6 +4,7 @@ from numpy import average
 import pygame
 import pygame.gfxdraw
 import random
+import itertools
 import json
 from draws import drawTowns, drawRoads
 
@@ -181,6 +182,85 @@ def initializeRoads(towns: list, generation_type: int) -> None:
         else:
             return False
 
+    def delaunay_edges(towns: list) -> set:
+        '''Return set of edges (index pairs) from Delaunay triangulation using Bowyer-Watson.'''
+        if len(towns) < 2:
+            return set()
+
+        points = [(t.x, t.y) for t in towns]
+        n = len(points)
+
+        xs = [p[0] for p in points]
+        ys = [p[1] for p in points]
+        minx, maxx = min(xs), max(xs)
+        miny, maxy = min(ys), max(ys)
+        dx = maxx - minx
+        dy = maxy - miny
+        delta = max(dx, dy) * 10.0 + 1.0
+        cx = (minx + maxx) / 2.0
+        cy = (miny + maxy) / 2.0
+
+        # Super-triangle vertices (indices n, n+1, n+2)
+        super_pts = [ (cx - 2*delta, cy - delta), (cx, cy + 2*delta), (cx + 2*delta, cy - delta) ]
+        all_points = points + super_pts
+
+        triangles = [(n, n+1, n+2)]
+
+        def circumcenter(a, b, c):
+            (x1, y1), (x2, y2), (x3, y3) = a, b, c
+            d = 2 * (x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2))
+            if abs(d) < 1e-12:
+                return None, None
+            ux = ((x1*x1 + y1*y1)*(y2 - y3) + (x2*x2 + y2*y2)*(y3 - y1) + (x3*x3 + y3*y3)*(y1 - y2)) / d
+            uy = ((x1*x1 + y1*y1)*(x3 - x2) + (x2*x2 + y2*y2)*(x1 - x3) + (x3*x3 + y3*y3)*(x2 - x1)) / d
+            return ux, uy
+
+        def in_circumcircle(pt, tri):
+            a = all_points[tri[0]]
+            b = all_points[tri[1]]
+            c = all_points[tri[2]]
+            center = circumcenter(a, b, c)
+            if center[0] is None:
+                return False
+            ux, uy = center
+            r2 = (ux - a[0])**2 + (uy - a[1])**2
+            return (pt[0] - ux)**2 + (pt[1] - uy)**2 <= r2 + 1e-8
+
+        for i in range(n):
+            pt = all_points[i]
+            bad = []
+            for tri in triangles:
+                if in_circumcircle(pt, tri):
+                    bad.append(tri)
+
+            # polygon is list of edges (as tuples) that are not shared by two bad triangles
+            polygon = []
+            for tri in bad:
+                for edge in [(tri[0], tri[1]), (tri[1], tri[2]), (tri[2], tri[0])]:
+                    rev = (edge[1], edge[0])
+                    if rev in polygon:
+                        polygon.remove(rev)
+                    else:
+                        polygon.append(edge)
+
+            for tri in bad:
+                if tri in triangles:
+                    triangles.remove(tri)
+
+            for edge in polygon:
+                triangles.append((edge[0], edge[1], i))
+
+        # remove triangles that include super-triangle vertices
+        triangles = [t for t in triangles if all(v < n for v in t)]
+
+        edges = set()
+        for tri in triangles:
+            for a, b in [(tri[0], tri[1]), (tri[1], tri[2]), (tri[2], tri[0])]:
+                if a < n and b < n:
+                    edges.add(tuple(sorted((a, b))))
+
+        return edges
+
     match generation_type:
         case 1:  # Random 
             attempts = 0
@@ -227,5 +307,16 @@ def initializeRoads(towns: list, generation_type: int) -> None:
         case 3:  # One line
             # To be implemented
             pass
+        case 4:  # Delaunay triangulation
+            edges = delaunay_edges(towns)
+            # clear existing roads
+            for t in towns:
+                t.clearRoads()
+
+            for a, b in edges:
+                ta = towns[a]
+                tb = towns[b]
+                if checkMaxLength(ta, tb):
+                    ta.appendRoad(tb)
     return None
 

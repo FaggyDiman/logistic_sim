@@ -36,7 +36,7 @@ towns = builder.initializeTowns(CNST['TOWN_NUM'], CNST['START_POPULATION'], CNST
 if towns is None:
     print("Error: Could not place towns with the given parameters.")
     exit(1)
-builder.initializeRoads(towns, generation_type=1)
+builder.initializeRoads(towns, generation_type=4)
 Screen, Clock = builder.createWindow(CNST['WIDTH'], CNST['HEIGHT'])
 
 cycles = 0
