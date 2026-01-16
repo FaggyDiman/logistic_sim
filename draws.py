@@ -6,9 +6,7 @@ from typing import List
 def drawTowns(Screen: pygame.Surface, towns: list) -> None | int:
 
     alive_towns = [town for town in towns if town.isAlive]
-    
-    if not alive_towns:
-        return 0
+    dead_towns = [town for town in towns if not town.isAlive]
 
     populations = [town.population for town in alive_towns]
     min_p = min(populations)
@@ -32,6 +30,9 @@ def drawTowns(Screen: pygame.Surface, towns: list) -> None | int:
         pygame.draw.circle(Screen, (0,0,0), (town.x, town.y), 12, 1)
         pygame.draw.circle(Screen, color, (town.x, town.y), 3)
 
+    for town in dead_towns:
+
+        pygame.draw.circle(Screen, (0,0,0), (town.x, town.y), 12, 1)
 
 def drawRoads(Screen: pygame.Surface, towns: list) -> None:
     drawn_edges = set()
