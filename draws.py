@@ -1,12 +1,20 @@
 import pygame
 import pygame.gfxdraw
-from typing import List
 
+def createWindow(width: int, height: int) -> pygame.Surface:
+    pygame.init()
+    Clock = pygame.time.Clock()
+    Screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
+    pygame.display.set_caption("Torgash")
+    pygame.display.set_icon(pygame.image.load("icon.png"))
+    Screen.fill((255, 255, 255))  
+    return Screen, Clock
 
 def drawTowns(Screen: pygame.Surface, towns: list) -> None | int:
 
-    alive_towns = [town for town in towns if town.isAlive]
-    dead_towns = [town for town in towns if not town.isAlive]
+    alive_towns = [town for town in towns if (town.isAlive and not town.isMain)]
+    dead_towns = [town for town in towns if (not town.isAlive and not town.isMain)]
+    main_hub = [town for town in towns if town.isMain]
 
     populations = [town.population for town in alive_towns]
     min_p = min(populations)
@@ -28,11 +36,23 @@ def drawTowns(Screen: pygame.Surface, towns: list) -> None | int:
         pygame.draw.circle(Screen, (0,0,0), (town.x, town.y), 12, 5)
         pygame.draw.circle(Screen, color, (town.x, town.y), 12, 4)
         pygame.draw.circle(Screen, (0,0,0), (town.x, town.y), 12, 1)
-        pygame.draw.circle(Screen, color, (town.x, town.y), 3)
+
+        if town.AgentType == 'Collector':
+            pygame.draw.circle(Screen, (255, 0, 0), (town.x, town.y), 3)
+
+        if town.AgentType == 'Laissez-Faire':
+           pygame.draw.circle(Screen, (0, 255, 0), (town.x, town.y), 3)
+
+        if town.AgentType == 'Basic':
+            pygame.draw.circle(Screen, (122, 122, 122), (town.x, town.y), 3)
 
     for town in dead_towns:
 
         pygame.draw.circle(Screen, (0,0,0), (town.x, town.y), 12, 1)
+
+    for town in main_hub:
+        rect = pygame.Rect(town.x-10, town.y-10, 20, 20)
+        pygame.draw.rect(Screen, (255, 215, 0), rect)
 
 def drawRoads(Screen: pygame.Surface, towns: list) -> None:
     drawn_edges = set()
@@ -43,3 +63,9 @@ def drawRoads(Screen: pygame.Surface, towns: list) -> None:
             if edge_id not in drawn_edges:
                 pygame.gfxdraw.line(Screen, town.x, town.y, connected_town.x, connected_town.y, (122, 122, 122))
                 drawn_edges.add(edge_id)
+
+def drawTurns(Screen: pygame.Surface, cycles: int) -> None: #draw simulation turns counter
+    font = pygame.font.SysFont(None, 16)
+    turns_text = font.render(f'Turns: {cycles}', True, (0, 0, 0))
+    Screen.blit(turns_text, (10, 10))
+ 

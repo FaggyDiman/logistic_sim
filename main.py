@@ -1,10 +1,10 @@
-from math import e
 from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
-import random
 import builder
 import json
+import draws
+from simState import weeks
 
 with open('constants.json', 'r') as f:
     CNST = json.load(f)
@@ -32,20 +32,21 @@ def askStartValues() -> bool:
 
 
 askStartValues()
-towns = builder.initializeTowns(CNST['TOWN_NUM'], CNST['START_POPULATION'], CNST['START_WAREHOUSE'], CNST['POP_CF'], CNST['WIDTH'], CNST['HEIGHT'])
+towns = builder.initializeMap(CNST['TOWN_NUM'], CNST['START_POPULATION'], CNST['START_WAREHOUSE'], CNST['POP_CF'], CNST['WIDTH'], CNST['HEIGHT'], generation_type=4)
 if towns is None:
-    print("Error: Could not place towns with the given parameters.")
+    print("Error: Could not generate a fully-connected map after multiple attempts.")
     exit(1)
-builder.initializeRoads(towns, generation_type=4)
-Screen, Clock = builder.createWindow(CNST['WIDTH'], CNST['HEIGHT'])
+Screen, Clock = draws.createWindow(CNST['WIDTH'], CNST['HEIGHT'])
 
-cycles = 0
 running = True
+cycles = 0
+### Start of main loop ###  
 while running:
     
     Screen.fill((255, 255, 255))  
-    builder.drawRoads(Screen, towns)
-    builder.drawTowns(Screen, towns)
+    draws.drawRoads(Screen, towns)
+    draws.drawTowns(Screen, towns)
+    draws.drawTurns(Screen, weeks)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -59,4 +60,7 @@ while running:
     pygame.display.flip()
     Clock.tick(60)
     cycles += 1
+
+    if cycles%50 == 0:
+        weeks += 1
 ### End of main loop ###
