@@ -4,6 +4,7 @@ import pygame
 import builder
 import json
 import draws
+from simState import weeks
 
 with open('constants.json', 'r') as f:
     CNST = json.load(f)
@@ -37,13 +38,15 @@ if towns is None:
     exit(1)
 Screen, Clock = draws.createWindow(CNST['WIDTH'], CNST['HEIGHT'])
 
-cycles = 0
 running = True
+cycles = 0
+### Start of main loop ###  
 while running:
     
     Screen.fill((255, 255, 255))  
     draws.drawRoads(Screen, towns)
     draws.drawTowns(Screen, towns)
+    draws.drawTurns(Screen, weeks)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -57,4 +60,7 @@ while running:
     pygame.display.flip()
     Clock.tick(60)
     cycles += 1
+
+    if cycles%50 == 0:
+        weeks += 1
 ### End of main loop ###

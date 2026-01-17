@@ -55,3 +55,9 @@ def drawRoads(Screen: pygame.Surface, towns: list) -> None:
             if edge_id not in drawn_edges:
                 pygame.gfxdraw.line(Screen, town.x, town.y, connected_town.x, connected_town.y, (122, 122, 122))
                 drawn_edges.add(edge_id)
+
+def drawTurns(Screen: pygame.Surface, cycles: int) -> None: #draw simulation turns counter
+    font = pygame.font.SysFont(None, 16)
+    turns_text = font.render(f'Turns: {cycles}', True, (0, 0, 0))
+    Screen.blit(turns_text, (10, 10))
+ 
