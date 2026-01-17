@@ -1,6 +1,5 @@
 from __future__ import annotations
 import math
-import pygame
 import random
 import json
 
@@ -18,10 +17,14 @@ class Town:
         self.y = y
         self.isMain = isMain
         self.isAlive = isAlive
+        self.AgentType = None
 
     def __repr__(self) -> str:
         return f"town{self.name}"
     
+    def GetCharacteristics(self, towns: list) -> None:
+        pass
+
     def appendRoad(self, other_town: Town) -> None:
         if other_town in self.roads:
             return None
@@ -46,13 +49,17 @@ class Town:
     
     def findRoute(self, towns: list):
         pass
+        
 
     def calculateSaldo(self, towns: list):
         pass
 
 def initializeTowns(num_towns: int, start_population: int, start_warehouse: list, pop_cf: float, width: int, height: int) -> list:
     towns = []
+    have_main = False
+
     for town in range(num_towns):
+
         name = town
         population = int(start_population + start_population * random.uniform(pop_cf, -pop_cf))
         warehouse = start_warehouse.copy()
@@ -60,7 +67,11 @@ def initializeTowns(num_towns: int, start_population: int, start_warehouse: list
         attempts = 0
         isAlive = True
         road_count = 0
+
         while attempts < 100:
+            if have_main is False:
+                isMain = True
+                have_main = True
             x = random.randint(0, width)
             y = random.randint(0, height)
             valid = True
@@ -79,7 +90,44 @@ def initializeTowns(num_towns: int, start_population: int, start_warehouse: list
         towns.append(Town(name, population, warehouse, roads, road_count, x, y, isMain, isAlive))
     return towns
 
-def initializeRoads(towns: list, generation_type: int) -> None:
+def initializeMap(num_towns: int, start_population: int, start_warehouse: list, pop_cf: float, width: int, height: int, generation_type: int) -> list:
+    '''
+    Build map
+
+    :param num_towns: Number of towns
+    :param start_population: Starting population for each town
+    :param start_warehouse: Starting warehouse items
+    :param pop_cf: Population coefficient
+    :param width: Map width
+    :param height: Map height
+    :param generation_type: Type of road generation
+    :return: List of fully connected Town objects
+    '''
+    max_retries = 50
+    attempt = 0
+    
+    while attempt < max_retries:
+        attempt += 1
+        print(f"Map generation attempt {attempt}/{max_retries}")
+        
+        # Reinitialize town positions
+        towns = initializeTowns(num_towns, start_population, start_warehouse, pop_cf, width, height)
+        if towns is None:
+            print("Failed to place towns without overlap. Retrying...")
+            continue
+        
+        # Try to generate roads
+        success = initializeRoads(towns, generation_type)
+        if success:
+            print(f"Map generated successfully on attempt {attempt}")
+            return towns
+        else:
+            print(f"Failed to generate fully-connected map on attempt {attempt}. Reinitializing town positions...")
+    
+    print(f"Failed to generate fully-connected map after {max_retries} attempts")
+    return None
+
+def initializeRoads(towns: list, generation_type: int) -> bool:
     '''
     Initializing roads between towns
     
@@ -87,6 +135,7 @@ def initializeRoads(towns: list, generation_type: int) -> None:
     :type towns: list
     :param generation_type: 1 — random, 2 — hubs, 3 — one line
     :type generation_type: int
+    :return: True if successful, False otherwise
     '''
 
     min_road_quantity = len(towns) + 2
@@ -303,5 +352,13 @@ def initializeRoads(towns: list, generation_type: int) -> None:
                 tb = towns[b]
                 if checkMaxLength(ta, tb):
                     ta.appendRoad(tb)
-    return None
+
+            for town in random.choices(towns, k = len(towns) // 3):
+                town.removeRoad(random.choice(town.roads))
+
+    # Check if the map is fully connected
+    if checkForConnectivity(towns) and noAnyIntersections(towns):
+        return True
+    else:
+        return False
 

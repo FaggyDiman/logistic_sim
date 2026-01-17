@@ -12,8 +12,9 @@ def createWindow(width: int, height: int) -> pygame.Surface:
 
 def drawTowns(Screen: pygame.Surface, towns: list) -> None | int:
 
-    alive_towns = [town for town in towns if town.isAlive]
-    dead_towns = [town for town in towns if not town.isAlive]
+    alive_towns = [town for town in towns if (town.isAlive and not town.isMain)]
+    dead_towns = [town for town in towns if (not town.isAlive and not town.isMain)]
+    main_hub = [town for town in towns if town.isMain]
 
     populations = [town.population for town in alive_towns]
     min_p = min(populations)
@@ -40,6 +41,10 @@ def drawTowns(Screen: pygame.Surface, towns: list) -> None | int:
     for town in dead_towns:
 
         pygame.draw.circle(Screen, (0,0,0), (town.x, town.y), 12, 1)
+
+    for town in main_hub:
+        rect = pygame.Rect(town.x-10, town.y-10, 20, 20)
+        pygame.draw.rect(Screen, (255, 215, 0), rect)
 
 def drawRoads(Screen: pygame.Surface, towns: list) -> None:
     drawn_edges = set()

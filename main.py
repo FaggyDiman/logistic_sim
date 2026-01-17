@@ -31,11 +31,10 @@ def askStartValues() -> bool:
 
 
 askStartValues()
-towns = builder.initializeTowns(CNST['TOWN_NUM'], CNST['START_POPULATION'], CNST['START_WAREHOUSE'], CNST['POP_CF'], CNST['WIDTH'], CNST['HEIGHT'])
+towns = builder.initializeMap(CNST['TOWN_NUM'], CNST['START_POPULATION'], CNST['START_WAREHOUSE'], CNST['POP_CF'], CNST['WIDTH'], CNST['HEIGHT'], generation_type=4)
 if towns is None:
-    print("Error: Could not place towns with the given parameters.")
+    print("Error: Could not generate a fully-connected map after multiple attempts.")
     exit(1)
-builder.initializeRoads(towns, generation_type=4)
 Screen, Clock = draws.createWindow(CNST['WIDTH'], CNST['HEIGHT'])
 
 cycles = 0
