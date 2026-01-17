@@ -104,7 +104,7 @@ def initializeMap(num_towns: int, start_population: int, start_warehouse: list, 
     :param generation_type: Type of road generation
     :return: List of fully connected Town objects
     '''
-    max_retries = 50
+    max_retries = 500
     attempt = 0
     
     while attempt < max_retries:
@@ -235,7 +235,6 @@ def initializeRoads(towns: list, generation_type: int) -> bool:
         cx = (minx + maxx) / 2.0
         cy = (miny + maxy) / 2.0
 
-        # Super-triangle vertices (indices n, n+1, n+2)
         super_pts = [ (cx - 2*delta, cy - delta), (cx, cy + 2*delta), (cx + 2*delta, cy - delta) ]
         all_points = points + super_pts
 
@@ -268,7 +267,6 @@ def initializeRoads(towns: list, generation_type: int) -> bool:
                 if in_circumcircle(pt, tri):
                     bad.append(tri)
 
-            # polygon is list of edges (as tuples) that are not shared by two bad triangles
             polygon = []
             for tri in bad:
                 for edge in [(tri[0], tri[1]), (tri[1], tri[2]), (tri[2], tri[0])]:
@@ -285,7 +283,6 @@ def initializeRoads(towns: list, generation_type: int) -> bool:
             for edge in polygon:
                 triangles.append((edge[0], edge[1], i))
 
-        # remove triangles that include super-triangle vertices
         triangles = [t for t in triangles if all(v < n for v in t)]
 
         edges = set()
@@ -344,18 +341,15 @@ def initializeRoads(towns: list, generation_type: int) -> bool:
             pass
         case 4:  # Delaunay triangulation
             edges = delaunay_edges(towns)
-            # clear existing roads
             for t in towns:
                 t.clearRoads()
 
             for a, b in edges:
                 ta = towns[a]
                 tb = towns[b]
-                # Check max length
                 if not checkMaxLength(ta, tb):
                     continue
                 
-                # Check if road would be too close to other towns
                 skip_road = False
                 for other_town in towns:
                     if other_town != ta and other_town != tb:
@@ -365,20 +359,16 @@ def initializeRoads(towns: list, generation_type: int) -> bool:
                 if skip_road:
                     continue
                 
-                # Add road temporarily to check for intersections
                 ta.appendRoad(tb)
                 
-                # Check if road intersects with existing roads
                 if not noAnyIntersections(towns):
-                    # Remove the road if it causes intersections
                     ta.removeRoad(tb)
                     continue
 
-            for town in random.choices(towns, k = len(towns) // 3):
+            for town in random.choices(towns, k = len(towns) // 2):
                 if town.roads:
                     town.removeRoad(random.choice(town.roads))
 
-    # Check if the map is fully connected
     if checkForConnectivity(towns) and noAnyIntersections(towns):
         return True
     else:

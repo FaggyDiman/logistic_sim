@@ -1,10 +1,16 @@
 from os import environ
+from tracemalloc import start
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
 import builder
 import json
 import draws
 from simState import weeks
+
+towns = []
+Screen, Clock = None, None
+selected_town = None
+cycles = 0
 
 with open('constants.json', 'r') as f:
     CNST = json.load(f)
@@ -30,16 +36,23 @@ def askStartValues() -> bool:
             print("Invalid input. Using default settings.")
         return False
 
+def StartNewSimulation() -> None:
+
+    global towns, Screen, Clock, selected_town, cycles, weeks
+
+    towns = builder.initializeMap(CNST['TOWN_NUM'], CNST['START_POPULATION'], CNST['START_WAREHOUSE'], CNST['POP_CF'], CNST['WIDTH'], CNST['HEIGHT'], generation_type=4)
+    if towns is None:
+        print("Error: Could not generate a fully-connected map after multiple attempts.")
+        exit(1)
+    Screen, Clock = draws.createWindow(CNST['WIDTH'], CNST['HEIGHT'])
+    cycles = 0
+    weeks = 0
+    selected_town = None
 
 askStartValues()
-towns = builder.initializeMap(CNST['TOWN_NUM'], CNST['START_POPULATION'], CNST['START_WAREHOUSE'], CNST['POP_CF'], CNST['WIDTH'], CNST['HEIGHT'], generation_type=4)
-if towns is None:
-    print("Error: Could not generate a fully-connected map after multiple attempts.")
-    exit(1)
-Screen, Clock = draws.createWindow(CNST['WIDTH'], CNST['HEIGHT'])
+StartNewSimulation()
 
 running = True
-cycles = 0
 ### Start of main loop ###  
 while running:
     
@@ -47,12 +60,21 @@ while running:
     draws.drawRoads(Screen, towns)
     draws.drawTowns(Screen, towns)
     draws.drawTurns(Screen, weeks)
+    draws.drawSelectionBox(Screen, selected_town)
     for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN: ## handle selection box
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            for town in towns:
+                if ((mouse_x - town.x) ** 2 + (mouse_y - town.y) ** 2) <= 16 ** 2:
+                    selected_town = town
+            
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 running = False
+            if event.key == pygame.K_r: ##if key R pressed, restart simulation
+                StartNewSimulation()
         elif event.type == pygame.VIDEORESIZE:
             Screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
             

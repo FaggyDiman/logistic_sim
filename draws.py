@@ -1,6 +1,8 @@
 import pygame
 import pygame.gfxdraw
 
+from builder import Town
+
 def createWindow(width: int, height: int) -> pygame.Surface:
     pygame.init()
     Clock = pygame.time.Clock()
@@ -23,6 +25,10 @@ def drawTowns(Screen: pygame.Surface, towns: list) -> None | int:
 
     minimum_green = 100
     maximum_green = 255
+    minimum_red = 100
+    maximum_red = 255
+    minimum_blue = 100
+    maximum_blue = 255
     
     for town in alive_towns:
         if pop_range == 0:
@@ -30,21 +36,30 @@ def drawTowns(Screen: pygame.Surface, towns: list) -> None | int:
         else:
             ratio = (town.population - min_p) / pop_range
         
-        current_green = int(minimum_green + (maximum_green - minimum_green) * ratio)
-        color = (0, current_green, 0)
+        if town.AgentType == 'Basic':
+            current_intensity = int(minimum_green + (maximum_green - minimum_green) * ratio)
+            color = (0, current_intensity, 0)
+        elif town.AgentType == 'Collector':
+            current_intensity = int(minimum_red + (maximum_red - minimum_red) * ratio)
+            color = (current_intensity, 0, 0)
+        elif town.AgentType == 'Laissez-Faire':
+            current_intensity = int(minimum_blue + (maximum_blue - minimum_blue) * ratio)
+            color = (0, 0, current_intensity)
+        else:
+            color = (0, int(minimum_green + (maximum_green - minimum_green) * ratio), 0)  # default to green
         
-        pygame.draw.circle(Screen, (0,0,0), (town.x, town.y), 12, 5)
-        pygame.draw.circle(Screen, color, (town.x, town.y), 12, 4)
-        pygame.draw.circle(Screen, (0,0,0), (town.x, town.y), 12, 1)
+        pygame.draw.circle(Screen, (0,0,0), (town.x, town.y), 10, 5)
+        pygame.draw.circle(Screen, color, (town.x, town.y), 10, 4)
+        pygame.draw.circle(Screen, (0,0,0), (town.x, town.y), 10, 1)
 
         if town.AgentType == 'Collector':
-            pygame.draw.circle(Screen, (255, 0, 0), (town.x, town.y), 3)
+            pygame.draw.circle(Screen, (255, 0, 0), (town.x, town.y), 2)
 
         if town.AgentType == 'Laissez-Faire':
-           pygame.draw.circle(Screen, (0, 255, 0), (town.x, town.y), 3)
+            pygame.draw.circle(Screen, (0, 0, 255), (town.x, town.y), 2)
 
         if town.AgentType == 'Basic':
-            pygame.draw.circle(Screen, (122, 122, 122), (town.x, town.y), 3)
+            pygame.draw.circle(Screen, (0, 255, 0), (town.x, town.y), 2)
 
     for town in dead_towns:
 
@@ -68,4 +83,7 @@ def drawTurns(Screen: pygame.Surface, cycles: int) -> None: #draw simulation tur
     font = pygame.font.SysFont(None, 16)
     turns_text = font.render(f'Turns: {cycles}', True, (0, 0, 0))
     Screen.blit(turns_text, (10, 10))
- 
+
+def drawSelectionBox(Screen: pygame.Surface, selected_town: Town) -> None:
+    if selected_town:
+        pygame.draw.circle(Screen, (0, 0, 0), (selected_town.x, selected_town.y), 16, 2)
