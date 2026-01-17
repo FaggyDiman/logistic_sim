@@ -1,10 +1,9 @@
-from math import e
 from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import pygame
-import random
 import builder
 import json
+import draws
 
 with open('constants.json', 'r') as f:
     CNST = json.load(f)
@@ -37,15 +36,15 @@ if towns is None:
     print("Error: Could not place towns with the given parameters.")
     exit(1)
 builder.initializeRoads(towns, generation_type=4)
-Screen, Clock = builder.createWindow(CNST['WIDTH'], CNST['HEIGHT'])
+Screen, Clock = draws.createWindow(CNST['WIDTH'], CNST['HEIGHT'])
 
 cycles = 0
 running = True
 while running:
     
     Screen.fill((255, 255, 255))  
-    builder.drawRoads(Screen, towns)
-    builder.drawTowns(Screen, towns)
+    draws.drawRoads(Screen, towns)
+    draws.drawTowns(Screen, towns)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False

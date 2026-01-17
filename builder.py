@@ -1,13 +1,8 @@
 from __future__ import annotations
 import math
-from numpy import average
 import pygame
-import pygame.gfxdraw
 import random
-import itertools
 import json
-from draws import drawTowns, drawRoads
-
 
 with open('constants.json', 'r') as f:
     CNST = json.load(f)
@@ -83,16 +78,6 @@ def initializeTowns(num_towns: int, start_population: int, start_warehouse: list
         isMain = (town == 0)
         towns.append(Town(name, population, warehouse, roads, road_count, x, y, isMain, isAlive))
     return towns
-    
-
-def createWindow(width: int, height: int) -> pygame.Surface:
-    pygame.init()
-    Clock = pygame.time.Clock()
-    Screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
-    pygame.display.set_caption("Torgash")
-    pygame.display.set_icon(pygame.image.load("icon.png"))
-    Screen.fill((255, 255, 255))  
-    return Screen, Clock
 
 def initializeRoads(towns: list, generation_type: int) -> None:
     '''

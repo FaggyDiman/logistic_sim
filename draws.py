@@ -1,7 +1,14 @@
 import pygame
 import pygame.gfxdraw
-from typing import List
 
+def createWindow(width: int, height: int) -> pygame.Surface:
+    pygame.init()
+    Clock = pygame.time.Clock()
+    Screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
+    pygame.display.set_caption("Torgash")
+    pygame.display.set_icon(pygame.image.load("icon.png"))
+    Screen.fill((255, 255, 255))  
+    return Screen, Clock
 
 def drawTowns(Screen: pygame.Surface, towns: list) -> None | int:
 
