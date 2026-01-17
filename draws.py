@@ -36,7 +36,15 @@ def drawTowns(Screen: pygame.Surface, towns: list) -> None | int:
         pygame.draw.circle(Screen, (0,0,0), (town.x, town.y), 12, 5)
         pygame.draw.circle(Screen, color, (town.x, town.y), 12, 4)
         pygame.draw.circle(Screen, (0,0,0), (town.x, town.y), 12, 1)
-        pygame.draw.circle(Screen, color, (town.x, town.y), 3)
+
+        if town.AgentType == 'Collector':
+            pygame.draw.circle(Screen, (255, 0, 0), (town.x, town.y), 3)
+
+        if town.AgentType == 'Laissez-Faire':
+           pygame.draw.circle(Screen, (0, 255, 0), (town.x, town.y), 3)
+
+        if town.AgentType == 'Basic':
+            pygame.draw.circle(Screen, (122, 122, 122), (town.x, town.y), 3)
 
     for town in dead_towns:
 

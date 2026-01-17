@@ -2,12 +2,15 @@ from __future__ import annotations
 import math
 import random
 import json
-
+from numpy.random import choice
 with open('constants.json', 'r') as f:
     CNST = json.load(f)
 
 class Town:
-    def __init__(self, name: str | int, population: int, warehouse: list, roads: list, road_count: int, x: int, y: int, isMain: bool, isAlive: bool) -> None:
+
+    archetypes = ['Collector', 'Laissez-Faire', 'Basic']
+
+    def __init__(self, name: str | int, population: int, warehouse: list, roads: list, road_count: int, x: int, y: int, isMain: bool, isAlive: bool, agentType: str) -> None:
         self.name = name
         self.population = population
         self.warehouse = warehouse
@@ -17,13 +20,10 @@ class Town:
         self.y = y
         self.isMain = isMain
         self.isAlive = isAlive
-        self.AgentType = None
+        self.AgentType = agentType
 
     def __repr__(self) -> str:
         return f"town{self.name}"
-    
-    def GetCharacteristics(self, towns: list) -> None:
-        pass
 
     def appendRoad(self, other_town: Town) -> None:
         if other_town in self.roads:
@@ -67,6 +67,7 @@ def initializeTowns(num_towns: int, start_population: int, start_warehouse: list
         attempts = 0
         isAlive = True
         road_count = 0
+        agentType = choice(Town.archetypes, p = [0.1, 0.3, 0.6])
 
         while attempts < 100:
             if have_main is False:
@@ -87,7 +88,7 @@ def initializeTowns(num_towns: int, start_population: int, start_warehouse: list
         if attempts >= 100:
             return None  # Failed to place towns without overlap
         isMain = (town == 0)
-        towns.append(Town(name, population, warehouse, roads, road_count, x, y, isMain, isAlive))
+        towns.append(Town(name, population, warehouse, roads, road_count, x, y, isMain, isAlive, agentType))
     return towns
 
 def initializeMap(num_towns: int, start_population: int, start_warehouse: list, pop_cf: float, width: int, height: int, generation_type: int) -> list:
@@ -350,11 +351,32 @@ def initializeRoads(towns: list, generation_type: int) -> bool:
             for a, b in edges:
                 ta = towns[a]
                 tb = towns[b]
-                if checkMaxLength(ta, tb):
-                    ta.appendRoad(tb)
+                # Check max length
+                if not checkMaxLength(ta, tb):
+                    continue
+                
+                # Check if road would be too close to other towns
+                skip_road = False
+                for other_town in towns:
+                    if other_town != ta and other_town != tb:
+                        if checkDistance(other_town.x, other_town.y, ta.x, ta.y, tb.x, tb.y):
+                            skip_road = True
+                            break
+                if skip_road:
+                    continue
+                
+                # Add road temporarily to check for intersections
+                ta.appendRoad(tb)
+                
+                # Check if road intersects with existing roads
+                if not noAnyIntersections(towns):
+                    # Remove the road if it causes intersections
+                    ta.removeRoad(tb)
+                    continue
 
             for town in random.choices(towns, k = len(towns) // 3):
-                town.removeRoad(random.choice(town.roads))
+                if town.roads:
+                    town.removeRoad(random.choice(town.roads))
 
     # Check if the map is fully connected
     if checkForConnectivity(towns) and noAnyIntersections(towns):
