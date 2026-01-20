@@ -3,6 +3,7 @@ import pygame.gfxdraw
 
 from builder import Town
 
+
 def createWindow(width: int, height: int) -> pygame.Surface:
     pygame.init()
     Clock = pygame.time.Clock()

@@ -1,9 +1,12 @@
 from os import environ
 from tracemalloc import start
+
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
-import pygame
-import builder
 import json
+
+import pygame
+
+import builder
 import draws
 from simState import weeks
 

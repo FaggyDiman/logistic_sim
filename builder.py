@@ -1,8 +1,11 @@
 from __future__ import annotations
+
+import json
 import math
 import random
-import json
+
 from numpy.random import choice
+
 with open('constants.json', 'r') as f:
     CNST = json.load(f)
 

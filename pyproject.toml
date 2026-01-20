@@ -17,7 +17,7 @@ check_untyped_defs = true
 ignore_missing_imports = true
 
 [tool.flake8]
-max-line-length = 88
+max-line-length = 100
 extend-ignore = ["E203"] 
 exclude = [
     ".git",
