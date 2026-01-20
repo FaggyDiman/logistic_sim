@@ -85,6 +85,9 @@ ipython_config.py
 .pdm-python
 .pdm-build/
 
+# Pylint
+.pylint.d/
+
 # pixi
 #   Similar to Pipfile.lock, it is generally recommended to include pixi.lock in version control.
 #pixi.lock
