@@ -27,4 +27,13 @@ exclude = [
     ".venv",
     ".env"
 ]
+
+[tool.pylint.main]
+py-version = "3.13.7"
+
+[tool.pylint.format]
+max-line-length = 100
+
+
+
 max-complexity = 10
