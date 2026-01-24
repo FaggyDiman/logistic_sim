@@ -1,3 +1,6 @@
+'''
+Draws module
+'''
 import pygame
 import pygame.gfxdraw
 
@@ -5,6 +8,16 @@ from builder import Town
 
 
 def createWindow(width: int, height: int) -> pygame.Surface:
+    '''
+    creates a pygame Surface to work with
+    
+    :param width: Width of the window
+    :type width: int
+    :param height: Height of the window
+    :type height: int
+    :return: pygame.Surface
+    :rtype: Surface
+    '''
     pygame.init()
     Clock = pygame.time.Clock()
     Screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
@@ -13,7 +26,16 @@ def createWindow(width: int, height: int) -> pygame.Surface:
     Screen.fill((255, 255, 255))  
     return Screen, Clock
 
-def drawTowns(Screen: pygame.Surface, towns: list) -> None | int:
+def drawTowns(Screen: pygame.Surface, towns: list) -> None:
+    '''
+    Draws every town from the list
+    
+    :param Screen: Surface to draw onto
+    :type Screen: pygame.Surface
+    :param towns: List of towns
+    :type towns: list
+    :return: None 
+    '''
 
     alive_towns = [town for town in towns if (town.isAlive and not town.isMain)]
     dead_towns = [town for town in towns if (not town.isAlive and not town.isMain)]
