@@ -20,6 +20,12 @@ with open('constants.json', 'r') as f:
 
 
 def askStartValues() -> bool:
+    '''
+    Prompts the user to choose whether to use default settings or input custom values for the simulation.
+    
+    :return: True if default settings are chosen, False otherwise
+    :rtype: bool
+    '''
     response = input("Do you want to start with default settings? (y/n): ").lower()
 
     if response == 'y':
@@ -40,7 +46,11 @@ def askStartValues() -> bool:
         return False
 
 def StartNewSimulation() -> None:
-
+    '''
+    Initializes a new simulation (light-reset)
+    
+    :return: None
+    '''
     global towns, Screen, Clock, selected_town, cycles, weeks
 
     towns = builder.initializeMap(CNST['TOWN_NUM'], CNST['START_POPULATION'], CNST['START_WAREHOUSE'], CNST['POP_CF'], CNST['WIDTH'], CNST['HEIGHT'], generation_type=4)

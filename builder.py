@@ -10,10 +10,27 @@ with open('constants.json', 'r') as f:
     CNST = json.load(f)
 
 class Town:
+    '''
+    Represents a town in the simulation with properties like population, warehouse, roads, etc.
+    '''
 
     archetypes = ['Collector', 'Laissez-Faire', 'Basic']
 
     def __init__(self, name: str | int, population: int, warehouse: list, roads: list, road_count: int, x: int, y: int, isMain: bool, isAlive: bool, agentType: str) -> None:
+        '''
+        Initializes a Town object.
+        
+        :param name: Name or identifier of the town
+        :param population: Population of the town
+        :param warehouse: List of warehouse items
+        :param roads: List of connected towns
+        :param road_count: Number of roads
+        :param x: X coordinate
+        :param y: Y coordinate
+        :param isMain: Whether this is the main town
+        :param isAlive: Whether the town is alive
+        :param agentType: Type of agent for the town
+        '''
         self.name = name
         self.population = population
         self.warehouse = warehouse
@@ -26,9 +43,20 @@ class Town:
         self.AgentType = agentType
 
     def __repr__(self) -> str:
+        '''
+        Returns a string representation of the town.
+        
+        :return: String representation
+        '''
         return f"town{self.name}"
 
     def appendRoad(self, other_town: Town) -> None:
+        '''
+        Adds a road connection to another town if not already connected.
+        
+        :param other_town: The town to connect to
+        :return: None
+        '''
         if other_town in self.roads:
             return None
         self.roads.append(other_town)
@@ -37,6 +65,11 @@ class Town:
         other_town.road_count += 1
 
     def clearRoads(self) -> None:
+        '''
+        Removes all road connections from this town.
+        
+        :return: None
+        '''
         for other in self.roads:
             other.roads.remove(self)
             other.road_count -= 1
@@ -44,6 +77,12 @@ class Town:
         self.road_count = 0
 
     def removeRoad(self, other_town: Town) -> None:
+        '''
+        Removes the road connection to the specified town.
+        
+        :param other_town: The town to disconnect from
+        :return: None
+        '''
         if other_town in self.roads:
             self.roads.remove(other_town)
             self.road_count -= 1
@@ -51,13 +90,34 @@ class Town:
             other_town.road_count -= 1
     
     def findRoute(self, towns: list):
+        '''
+        Placeholder for finding a route (not implemented).
+        
+        :param towns: List of towns
+        '''
         pass
         
 
     def calculateSaldo(self, towns: list):
+        '''
+        Placeholder for calculating saldo (not implemented).
+        
+        :param towns: List of towns
+        '''
         pass
 
 def initializeTowns(num_towns: int, start_population: int, start_warehouse: list, pop_cf: float, width: int, height: int) -> list:
+    '''
+    Initializes a list of Town objects with random positions and properties.
+    
+    :param num_towns: Number of towns to create
+    :param start_population: Base population for towns
+    :param start_warehouse: Initial warehouse contents
+    :param pop_cf: Population variation coefficient
+    :param width: Map width
+    :param height: Map height
+    :return: List of Town objects or None if placement fails
+    '''
     towns = []
     have_main = False
 
@@ -146,6 +206,12 @@ def initializeRoads(towns: list, generation_type: int) -> bool:
     max_road_quantity = int(len(towns) * 1.3)
 
     def checkForConnectivity(towns: list) -> bool:
+        '''
+        Checks if all towns are connected via roads (graph is connected).
+        
+        :param towns: List of Town objects
+        :return: True if connected, False otherwise
+        '''
         visited = set()
 
         def dfs(town: Town):
@@ -158,6 +224,15 @@ def initializeRoads(towns: list, generation_type: int) -> bool:
         return len(visited) == len(towns)
     
     def checkForIntersection(p1, p2, p3, p4):
+        '''
+        Checks if two line segments intersect.
+        
+        :param p1: First point of first segment
+        :param p2: Second point of first segment
+        :param p3: First point of second segment
+        :param p4: Second point of second segment
+        :return: True if they intersect, False otherwise
+        '''
 
         def cp(o, a, b):
             return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
@@ -168,7 +243,12 @@ def initializeRoads(towns: list, generation_type: int) -> bool:
         return check1 and check2
     
     def noAnyIntersections(towns: list) -> bool:
-        ''' Check if any roads intersect '''
+        ''' 
+        Check if any roads intersect 
+        
+        :param towns: List of Town objects
+        :return: True if no intersections, False otherwise
+        '''
         edges = []
         seen = set()
 
@@ -197,6 +277,17 @@ def initializeRoads(towns: list, generation_type: int) -> bool:
         return True
 
     def checkDistance(px, py, x1, y1, x2, y2):
+        '''
+        Checks if a point is too close to a line segment.
+        
+        :param px: X of point
+        :param py: Y of point
+        :param x1: X of line start
+        :param y1: Y of line start
+        :param x2: X of line end
+        :param y2: Y of line end
+        :return: True if too close, False otherwise
+        '''
         dx = x2 - x1
         dy = y2 - y1
         denom = dx * dx + dy * dy
@@ -214,6 +305,13 @@ def initializeRoads(towns: list, generation_type: int) -> bool:
             return False
 
     def checkMaxLength(town1: Town, town2: Town) -> bool:
+        '''
+        Checks if the distance between two towns is within the maximum road length.
+        
+        :param town1: First town
+        :param town2: Second town
+        :return: True if within limit, False otherwise
+        '''
         distance = math.hypot(town1.x - town2.x, town1.y - town2.y)
         if distance <= CNST['MAX_ROAD_LENGTH']:
             return True
@@ -221,7 +319,12 @@ def initializeRoads(towns: list, generation_type: int) -> bool:
             return False
 
     def delaunay_edges(towns: list) -> set:
-        '''Return set of edges (index pairs) from Delaunay triangulation using Bowyer-Watson.'''
+        '''
+        Return set of edges (index pairs) from Delaunay triangulation using Bowyer-Watson.
+        
+        :param towns: List of Town objects
+        :return: Set of edge tuples
+        '''
         if len(towns) < 2:
             return set()
 

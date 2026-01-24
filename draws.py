@@ -93,6 +93,15 @@ def drawTowns(Screen: pygame.Surface, towns: list) -> None:
         pygame.draw.rect(Screen, (255, 215, 0), rect)
 
 def drawRoads(Screen: pygame.Surface, towns: list) -> None:
+    '''
+    Draws roads between connected towns.
+    
+    :param Screen: Surface to draw onto
+    :type Screen: pygame.Surface
+    :param towns: List of towns
+    :type towns: list
+    :return: None
+    '''
     drawn_edges = set()
 
     for town in towns:
@@ -103,10 +112,28 @@ def drawRoads(Screen: pygame.Surface, towns: list) -> None:
                 drawn_edges.add(edge_id)
 
 def drawTurns(Screen: pygame.Surface, cycles: int) -> None: #draw simulation turns counter
+    '''
+    Draws the simulation turns counter on the screen.
+    
+    :param Screen: Surface to draw onto
+    :type Screen: pygame.Surface
+    :param cycles: Number of simulation cycles/turns
+    :type cycles: int
+    :return: None
+    '''
     font = pygame.font.SysFont(None, 16)
     turns_text = font.render(f'Turns: {cycles}', True, (0, 0, 0))
     Screen.blit(turns_text, (10, 10))
 
 def drawSelectionBox(Screen: pygame.Surface, selected_town: Town) -> None:
+    '''
+    Draws a selection box around the selected town.
+    
+    :param Screen: Surface to draw onto
+    :type Screen: pygame.Surface
+    :param selected_town: The currently selected town
+    :type selected_town: Town
+    :return: None
+    '''
     if selected_town:
         pygame.draw.circle(Screen, (0, 0, 0), (selected_town.x, selected_town.y), 16, 2)
