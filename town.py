@@ -82,7 +82,7 @@ class Town:
     
     def findRoute(self, towns: list):
         '''
-        Placeholder for finding a route (not implemented).
+        Find a route to the nearest Main town.
         
         :param towns: List of towns
         '''
@@ -96,3 +96,19 @@ class Town:
         :param towns: List of towns
         '''
         pass
+
+    def calculateFee(self):
+        pass
+
+
+
+def CalculatePaths(towns: list) -> None:
+    '''
+    Calculates paths for each town in the list of towns.
+    
+    :param towns: List of Town objects
+    :type towns: list
+    :return: None
+    '''
+    for town in towns:
+        town.calculatePaths(towns)
