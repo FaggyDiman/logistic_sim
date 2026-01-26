@@ -32,14 +32,14 @@ def askStartValues() -> bool:
         return True
     else:
         try:
-            CNST['WIDTH'] = int(input("Enter the width of the surface (default 1200): ") or CNST['WIDTH'])
+            CNST['WIDTH'] = int(input("Enter the width of the surface (default 1250): ") or CNST['WIDTH'])
             CNST['HEIGHT'] = int(input("Enter the height of the surface (default 800): ") or CNST['HEIGHT'])
-            CNST['TOWN_NUM'] = int(input("Enter the number of towns (default 12): ") or CNST['TOWN_NUM'])
+            CNST['TOWN_NUM'] = int(input("Enter the number of towns (default 32): ") or CNST['TOWN_NUM'])
             CNST['START_POPULATION'] = int(input("Enter the starting population for each town (default 1000): ") or CNST['START_POPULATION'])
             START_WAREHOUSE_FOOD = int(input("Enter the starting food in warehouse for each town (default 1000): ") or CNST['START_WAREHOUSE'][0])
             START_WAREHOUSE_GOODS = int(input("Enter the starting goods in warehouse for each town (default 0): ") or CNST['START_WAREHOUSE'][1])
             CNST['START_WAREHOUSE'] = [START_WAREHOUSE_FOOD, START_WAREHOUSE_GOODS]
-            CNST['POP_CF'] = float(input("Enter the population starting deviation coefficient (default 0.1): ") or CNST['POP_CF'])
+            CNST['POP_CF'] = float(input("Enter the population starting deviation coefficient (default 0.15): ") or CNST['POP_CF'])
             print("Done! Starting simulation...")
         except ValueError:
             print("Invalid input. Using default settings.")
