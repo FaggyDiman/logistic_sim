@@ -8,12 +8,12 @@ import pygame
 
 import builder
 import draws
-from simState import weeks
 
 towns = []
 Screen, Clock = None, None
 selected_town = None
-cycles = 0
+cycles, weeks = 0, 0
+
 
 with open('constants.json', 'r') as f:
     CNST = json.load(f)
