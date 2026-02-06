@@ -4,7 +4,7 @@ Draws module
 import pygame
 import pygame.gfxdraw
 
-from builder import Town
+from town import Town
 
 
 def createWindow(width: int, height: int) -> pygame.Surface:
@@ -94,7 +94,7 @@ def drawTowns(Screen: pygame.Surface, towns: list) -> None:
 
 def drawRoads(Screen: pygame.Surface, towns: list) -> None:
     '''
-    Draws roads between connected towns.
+    Draws roads between connected towns. Roads with higher traffic are drawn thicker.
     
     :param Screen: Surface to draw onto
     :type Screen: pygame.Surface
@@ -104,11 +104,23 @@ def drawRoads(Screen: pygame.Surface, towns: list) -> None:
     '''
     drawn_edges = set()
 
+    # Get traffic data and compute maximum for normalization
+    from traffic import get_all_traffic
+    traffic_map = get_all_traffic()
+    max_traffic = max(traffic_map.values()) if traffic_map else 1
+    MAX_WIDTH = 8  # max pixel width for thickest road
+
     for town in towns:
         for connected_town in town.roads:
             edge_id = frozenset((town, connected_town))
             if edge_id not in drawn_edges:
-                pygame.gfxdraw.line(Screen, town.x, town.y, connected_town.x, connected_town.y, (122, 122, 122))
+                traffic_value = traffic_map.get(edge_id, 0)
+                # Normalize width between 1 and MAX_WIDTH
+                width = 1
+                if max_traffic > 0 and traffic_value > 0:
+                    width = max(1, int(1 + (traffic_value / max_traffic) * (MAX_WIDTH - 1)))
+                # Draw using pygame.draw.line so we can set width
+                pygame.draw.line(Screen, (122, 122, 122), (town.x, town.y), (connected_town.x, connected_town.y), width)
                 drawn_edges.add(edge_id)
 
 def drawTurns(Screen: pygame.Surface, cycles: int) -> None: #draw simulation turns counter

@@ -98,4 +98,10 @@ while running:
 
     if cycles%50 == 0:
         weeks += 1
+        for town in towns:
+            town.produceGoods()
+            print(town.execute_trade())
+            town.consumeFood()
+            town.deathfromHunger()
+
 ### End of main loop ###
