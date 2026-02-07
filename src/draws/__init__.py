@@ -4,7 +4,7 @@ Draws module
 import pygame
 import pygame.gfxdraw
 
-from town import Town
+from ..town import Town
 
 
 def createWindow(width: int, height: int) -> pygame.Surface:
@@ -105,7 +105,7 @@ def drawRoads(Screen: pygame.Surface, towns: list) -> None:
     drawn_edges = set()
 
     # Get traffic data and compute maximum for normalization
-    from traffic import get_all_traffic
+    from ..traffic import get_all_traffic
     traffic_map = get_all_traffic()
     max_traffic = max(traffic_map.values()) if traffic_map else 1
     MAX_WIDTH = 8  # max pixel width for thickest road

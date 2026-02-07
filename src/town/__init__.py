@@ -2,7 +2,7 @@ from __future__ import annotations
 import math
 import heapq  
 import json
-from traffic import increment_traffic, get_all_traffic
+from ..traffic import increment_traffic, get_all_traffic
 
 try:
     with open('constants.json', 'r') as f:
