@@ -1,4 +1,6 @@
 from os import environ
+
+from src.draws import selection
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import json
 
@@ -57,10 +59,15 @@ def run_simulation():
     running = True
     while running:
         Screen.fill((255, 255, 255))
+
         draws.drawRoads(Screen, towns)
         draws.drawTowns(Screen, towns)
         draws.drawTurns(Screen, weeks)
-        draws.drawSelectionBox(Screen, selected_town)
+
+        selection.drawSelectionBox(Screen, selected_town)
+        selection.drawInfoBox(Screen, selected_town)
+        selection.drawRoute(Screen, selected_town.find_best_route_to_main()[1] if selected_town else None)
+
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()

@@ -12,9 +12,9 @@ except Exception:
 
 ROAD_EXHAUSTION = CNST.get('ROAD_EXHAUSTION', 1.0)
 TOLL_MAP = {
-    'Laissez-Faire': 0.05,
-    'Basic': 0.15,
-    'Collector': 0.30
+    'Laissez-Faire': 0.02,
+    'Basic': 0.05,
+    'Collector': 0.10
 }
 
 class Town:
@@ -187,7 +187,7 @@ class Town:
             self.warehouse[1] = 0 
 
             # Town receives payment in food (exchange)
-            exchange_rate = CNST.get('PAYMENT_CF', 1.5)
+            exchange_rate = CNST.get('PAYMENT_CF')
             food_received = goods_to_sell * exchange_rate
             self.warehouse[0] += food_received
             

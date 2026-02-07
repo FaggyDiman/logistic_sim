@@ -137,15 +137,4 @@ def drawTurns(Screen: pygame.Surface, cycles: int) -> None: #draw simulation tur
     turns_text = font.render(f'Turns: {cycles}', True, (0, 0, 0))
     Screen.blit(turns_text, (10, 10))
 
-def drawSelectionBox(Screen: pygame.Surface, selected_town: Town) -> None:
-    '''
-    Draws a selection box around the selected town.
-    
-    :param Screen: Surface to draw onto
-    :type Screen: pygame.Surface
-    :param selected_town: The currently selected town
-    :type selected_town: Town
-    :return: None
-    '''
-    if selected_town:
-        pygame.draw.circle(Screen, (0, 0, 0), (selected_town.x, selected_town.y), 16, 2)
+
