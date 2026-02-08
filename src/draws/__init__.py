@@ -86,7 +86,7 @@ def drawTowns(Screen: pygame.Surface, towns: list) -> None:
 
     for town in dead_towns:
 
-        pygame.draw.circle(Screen, (0,0,0), (town.x, town.y), 12, 1)
+        pygame.draw.circle(Screen, (0,0,0), (town.x, town.y), 3, 1)
 
     for town in main_hub:
         rect = pygame.Rect(town.x-10, town.y-10, 20, 20)

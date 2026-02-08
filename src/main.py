@@ -92,7 +92,8 @@ def run_simulation():
             weeks += 1
             for town in towns:
                 town.produceGoods()
-                print(town.execute_trade())
+                town.execute_trade()
+                town.execute_trade()
                 town.consumeFood()
                 town.deathfromHunger()
 

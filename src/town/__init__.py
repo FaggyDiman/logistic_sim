@@ -12,9 +12,9 @@ except Exception:
 
 ROAD_EXHAUSTION = CNST.get('ROAD_EXHAUSTION', 1.0)
 TOLL_MAP = {
-    'Laissez-Faire': 0.02,
-    'Basic': 0.05,
-    'Collector': 0.10
+    'Laissez-Faire': 0.05,
+    'Basic': 0.10,
+    'Collector': 0.20
 }
 
 class Town:
@@ -82,10 +82,8 @@ class Town:
                 if cost < min_total_cost:
                     min_total_cost = cost
                     best_main_route = (current, path + [current])
-                # Don't stop here; there may be another main town or a cheaper path
                 continue
             
-            # If the current path is already more expensive than the best found, skip this branch
             if cost >= min_total_cost:
                 continue
 
@@ -95,8 +93,6 @@ class Town:
                 dist = math.hypot(neighbor.x - current.x, neighbor.y - current.y)
                 travel_cost = dist * ROAD_EXHAUSTION
                 
-                # 2. Toll (if neighbor is not Main and not the start, it charges a toll for passing through it)
-                # Note: Toll is usually charged on entry. Main town does not charge (we sell there).
                 toll_cost = 0
                 if not neighbor.isMain:
                     rate = TOLL_MAP.get(neighbor.AgentType, 0)
@@ -199,11 +195,13 @@ class Town:
     def consumeFood(self):
         consumed = int(self.population * CNST.get('HUNGER_CF', 1))
         self.warehouse[0] -= consumed
+        if self.warehouse[0] > 0:
+            self.population += int(self.warehouse[0] / (CNST.get('HUNGER_CF', 1) * 2))
 
     def deathfromHunger(self):
         if self.warehouse[0] < 0:
             hunger_deficit = abs(self.warehouse[0])
-            lost_population = int(hunger_deficit / CNST.get('HUNGER_CF', 1))
+            lost_population = max(1, int(hunger_deficit / CNST.get('HUNGER_CF', 1)))
             
             self.population -= lost_population
             self.warehouse[0] = 0 
